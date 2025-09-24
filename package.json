@@ -10,11 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@table-library/react-table-library": "^4.1.15",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.12",
     "bootstrap": "^5.3.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.1",
     "react-select": "^5.10.2",
+    "react-select-async-paginate": "^0.7.11",
     "react-window": "^1.8.11"
   },
   "devDependencies": {

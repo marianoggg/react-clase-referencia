@@ -6,9 +6,11 @@ import ProtectedRoutes from "./components/router/ProtectedRoutes";
 import MainLayout from "./components/layouts/MainLayout";
 
 function App() {
-  const Dashboard = lazy(() => import("./views/Dashboard"));
+  const Dashboard = lazy(() => import("./views/Native"));
   const Virtualizado = lazy(() => import("./views/Virtualizado"));
   const Select = lazy(() => import("./views/Select"));
+  const ReactTable = lazy(() => import("./views/ReactTableLibrary"));
+  const TanStackReactTable = lazy(() => import("./views/TanStackReactTable"));
 
   return (
     <BrowserRouter>
@@ -23,6 +25,11 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/virtualizado" element={<Virtualizado />} />
             <Route path="/select" element={<Select />} />
+            <Route path="/reactTable" element={<ReactTable />} />
+            <Route
+              path="/tanStackReactTable"
+              element={<TanStackReactTable />}
+            />
           </Route>
         </Route>
       </Routes>
