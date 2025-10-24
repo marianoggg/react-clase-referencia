@@ -27,6 +27,10 @@ function Navbar() {
       <NavLink to="/tanStackReactTable" style={{ marginRight: "1rem" }}>
         TanStackReactTable
       </NavLink>
+      <NavLink to="/tanStackReactTable_hooks" style={{ marginRight: "1rem" }}>
+        TanStackReactTable_limpio
+      </NavLink>
+
       <NavLink to="/login" onClick={handleLogout}>
         Logout
       </NavLink>

@@ -11,6 +11,9 @@ function App() {
   const Select = lazy(() => import("./views/Select"));
   const ReactTable = lazy(() => import("./views/ReactTableLibrary"));
   const TanStackReactTable = lazy(() => import("./views/TanStackReactTable"));
+  const UsersTanStackTable_hooks = lazy(
+    () => import("./views/TanStackReactTable_con_hooks")
+  );
 
   return (
     <BrowserRouter>
@@ -29,6 +32,14 @@ function App() {
             <Route
               path="/tanStackReactTable"
               element={<TanStackReactTable />}
+            />
+            <Route
+              path="/tanStackReactTable"
+              element={<TanStackReactTable />}
+            />
+            <Route
+              path="/tanStackReactTable_hooks"
+              element={<UsersTanStackTable_hooks />}
             />
           </Route>
         </Route>

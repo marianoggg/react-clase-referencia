@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useFetchUsers } from "../hooks/table.hooks";
 
 type User = {
   id: number;
@@ -55,127 +56,63 @@ function UsersTanStackTable() {
   const ENDPOINT = "user/paginated/filtered-sync";
   const URL = `http://${BACKEND_IP}:${BACKEND_PORT}/${ENDPOINT}`;
 
-  const [data, setData] = useState<User[]>([]);
+  //const [data, setData] = useState<User[]>([]);
   const [search, setSearch] = useState("");
-  const [cursor, setCursor] = useState<number>(0);
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
-  const [previousCursors, setPreviousCursors] = useState<number[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  //const [cursor, setCursor] = useState<number>(0);
+  //const [nextCursor, setNextCursor] = useState<number | null>(null);
+  //const [previousCursors, setPreviousCursors] = useState<number[]>([]);
+  //const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  //const [debouncedSearch, setDebouncedSearch] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
   const [pageSize, setPageSize] = useState(20);
 
   // Referencias para virtualización
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
-  // Debounce para la búsqueda
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [search]);
-
-  // Efecto para resetear la paginación cuando cambia el pageSize
-  useEffect(() => {
-    if (pageSize !== 20) {
-      setPreviousCursors([]);
-      setCursor(0);
-      setCurrentPage(1);
-      fetchUsers(0);
-    }
-  }, [pageSize]);
+  const {
+    data,
+    isLoading,
+    fetchNext,
+    fetchPrevious,
+    nextCursor,
+    previousCursors,
+  } = useFetchUsers({
+    url: URL,
+    pageSize,
+    search,
+  });
 
   // Definición de columnas
-  const columns = useMemo<ColumnDef<User>[]>(
+  const columns = useMemo<ColumnDef<any>[]>(
     () => [
       {
         accessorKey: "first_name",
         header: "Nombre",
-        cell: (info) => info.getValue(),
+        cell: (info: any) => info.getValue(),
         size: 150,
       },
       {
         accessorKey: "last_name",
         header: "Apellido",
-        cell: (info) => info.getValue(),
+        cell: (info: any) => info.getValue(),
         size: 150,
       },
       {
         accessorKey: "email",
         header: "Email",
-        cell: (info) => info.getValue(),
+        cell: (info: any) => info.getValue(),
         size: 250,
       },
       {
         accessorKey: "type",
         header: "Tipo",
-        cell: (info) => info.getValue(),
+        cell: (info: any) => info.getValue(),
         size: 100,
       },
     ],
     []
   );
-
-  const fetchUsers = async (
-    cursorId: number = 0,
-    isGoingBack: boolean = false
-  ) => {
-    setIsLoading(true);
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch(URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          limit: pageSize,
-          last_seen_id: cursorId,
-          search: debouncedSearch,
-        }),
-      });
-
-      const json = await res.json();
-
-      if (json.message) {
-        console.error("Error:", json.message);
-        setIsLoading(false);
-        return;
-      }
-
-      setData(json.users);
-      setNextCursor(json.next_cursor ?? null);
-
-      if (!isGoingBack && cursorId !== 0) {
-        setPreviousCursors((prev) => [...prev, cursor]);
-      }
-
-      setCursor(cursorId);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Cargar datos cuando cambia la búsqueda
-  useEffect(() => {
-    setPreviousCursors([]);
-    setCursor(0);
-    setCurrentPage(1);
-    fetchUsers(0);
-  }, [debouncedSearch]);
 
   // Configuración de la tabla
   const table = useReactTable({
@@ -210,18 +147,14 @@ function UsersTanStackTable() {
   const handleNext = () => {
     if (nextCursor !== null) {
       setCurrentPage((prev) => prev + 1);
-      fetchUsers(nextCursor);
+      fetchNext();
     }
   };
 
   const handlePrevious = () => {
     if (previousCursors.length > 0) {
-      const previousCursor = previousCursors[previousCursors.length - 1];
-      const newPreviousCursors = previousCursors.slice(0, -1);
-
-      setPreviousCursors(newPreviousCursors);
       setCurrentPage((prev) => prev - 1);
-      fetchUsers(previousCursor, true);
+      fetchPrevious();
     }
   };
 
@@ -231,7 +164,8 @@ function UsersTanStackTable() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setDebouncedSearch(search);
+      // reset to first page on explicit Enter search
+      setCurrentPage(1);
     }
   };
 
@@ -241,7 +175,7 @@ function UsersTanStackTable() {
 
   return (
     <div style={{ padding: 20, maxWidth: 1200 }}>
-      <h2>Usuarios - TanStack Table con Virtualización</h2>
+      <h2>Usuarios - TanStack Table con Virtualización--</h2>
 
       {/* Campo de búsqueda */}
       <div style={{ marginBottom: 20 }}>
