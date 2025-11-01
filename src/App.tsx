@@ -14,6 +14,7 @@ function App() {
   const UsersTanStackTable_hooks = lazy(
     () => import("./views/TanStackReactTable_con_hooks")
   );
+  const UserDetailForm = lazy(() => import("./views/userDetailForm"));
 
   return (
     <BrowserRouter>
@@ -41,6 +42,7 @@ function App() {
               path="/tanStackReactTable_hooks"
               element={<UsersTanStackTable_hooks />}
             />
+            <Route path="/userDetailForm" element={<UserDetailForm />} />
           </Route>
         </Route>
       </Routes>

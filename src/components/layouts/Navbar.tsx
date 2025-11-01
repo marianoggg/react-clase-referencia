@@ -31,6 +31,10 @@ function Navbar() {
         TanStackReactTable_limpio
       </NavLink>
 
+      <NavLink to="/userDetailForm" style={{ marginRight: "1rem" }}>
+        UserDetailForm
+      </NavLink>
+
       <NavLink to="/login" onClick={handleLogout}>
         Logout
       </NavLink>
